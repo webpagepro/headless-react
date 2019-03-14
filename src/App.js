@@ -1,28 +1,50 @@
 import React, { Component } from 'react';
-import logo from './logo.svg';
 import './App.css';
 
 class App extends Component {
+  constructor() {
+    super();
+
+    this.state = {
+      projects: []
+    }
+  }
+
+  componentDidMount = async() =>  {
+    try {
+      const res = await fetch('http://localhost:8888/headless-react/admin/wp-json/wp/v2/projects')
+      if (!res.ok) {
+        throw new Error('API request failed.')
+      }
+        const projects = await res.json()
+          this.setState({
+            projects: projects
+          })
+        }
+    catch (error) {
+      this.setState({ error: true })
+    }
+  }
+
+
   render() {
+
+    let projects = this.state.projects.map((project, index) => {
+      return (
+
+        <div key={index}>
+
+          <imgage src={project.better_featured_image.media_details.file.src}
+            alt={project.better_featured_image.alt_text} />
+        </div>
+      )
+    })
     return (
       <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Learn React
-          </a>
-        </header>
+        <h1>Projects</h1>
+        {projects}
       </div>
     );
   }
 }
-
 export default App;
